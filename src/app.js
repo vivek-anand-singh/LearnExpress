@@ -2,17 +2,18 @@ const express = require('express');
 
 const app  = express();
 
-app.use("/test",(req,res) =>{
-    res.send('Hello from the test');
+app.get("/user", (req,res) =>{
+    res.send({name: 'John', age: 30});
 })
 
-app.use("/hello",(req,res) =>{
-    res.send('Hello from the hello');
+app.post("/user", (req,res) =>{
+    res.send("Added the user")
 })
 
-app.use("/", (req,res) => {
-    res.send('Hello from the root');
+app.delete("/user", (req,res) =>{
+    res.send("Deleted the user")
 })
+
 
 app.listen(3000, ()=>{
     console.log('http://localhost:3000');
