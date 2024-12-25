@@ -2,9 +2,10 @@ const express = require('express');
 
 const app  = express();
 
-app.get("/user", (req,res) =>{
-    res.send({name: 'John', age: 30});
-})
+app.get("/user/:userId/:name/:password", (req, res) => {
+    console.log(req.params);
+    res.send({ name: 'John', age: 30 });
+});
 
 app.post("/user", (req,res) =>{
     res.send("Added the user")
