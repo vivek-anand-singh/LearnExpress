@@ -2,21 +2,35 @@ const express = require('express');
 
 const app  = express();
 
-app.get("/user/:userId/:name/:password", (req, res) => {
-    console.log(req.params);
-    res.send({ name: 'John', age: 30 });
+const {adminAuth, userAuth} = require('./middlewares/auth');
+
+
+app.use("/admin/getAllData", (req,res) =>{
+    console.log("Sent the complete data")
+    res.send("Sent the complete data");
+})
+
+app.use("/admin",adminAuth);
+
+app.use("/admin/deleteUser", (req,res) =>{
+    console.log("Deleted the user");
+    res.send("Deleted the user");
+})
+
+
+app.use("/user",(req,res) =>{
+        console.log("Inside the second function");
+        res.send("From the second function");
 });
 
-app.post("/user", (req,res) =>{
-    res.send("Added the user")
-})
-
-app.delete("/user", (req,res) =>{
-    res.send("Deleted the user")
-})
+app.use("/user", (req,res,next) =>{
+    console.log("Inside the first function");
+    next();
+});
 
 
-app.listen(3000, ()=>{
+app.listen(3000, ()=>{    
     console.log('http://localhost:3000');
 });
 
+ 
