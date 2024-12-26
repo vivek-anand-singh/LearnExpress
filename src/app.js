@@ -1,46 +1,31 @@
 const express = require('express');
-
+const connectDB =  require('./config/database');
 const app  = express();
+const User = require('./models/user');
 
-app.use("/",(err,req,res,next) =>{
-    if(err){
-        res.status(500).send("Something went wrong");   
+app.post("/signup", async (req,res) =>{
+    const userObj = {
+        firstName: "Akshay",
+        lastName: "Saini",
+        email: "akshay@gmail.com",
+        password: "12",
     }
-    else{
-        next();
+    // Creating a new instance of the user model
+    const user = new User(userObj);
+
+    try{
+        await user.save(); // Saving the user to the database
+        res.send("User Created");
+    } catch(err){
+        res.status(400).send("Error while creating the user", err.message); 
     }
-});
-
-const {adminAuth, userAuth} = require('./middlewares/auth');
-
-
-app.use("/admin/getAllData", (req,res) =>{
-    console.log("Sent the complete data")
-    res.send("Sent the complete data");
 })
 
-app.use("/admin",adminAuth);
-
-app.use("/admin/deleteUser", (req,res) =>{
-    console.log("Deleted the user");
-    res.send("Deleted the user");x``
-})
-
-
-app.use("/user",(req,res) =>{
-        console.log("Inside the second function");
-        res.send("From the second function");
+connectDB().then(() => {
+    console.log('Connected to MongoDB');
+    app.listen(3000, () => {
+        console.log('Server is running on port http://localhost:3000');
+    })}
+).catch((err) => {
+    console.log(err); 
 });
-
-app.use("/user", (req,res,next) =>{
-    console.log("Inside the first function");
-    next();
-});
-
-
-
-app.listen(3000, ()=>{    
-    console.log('http://localhost:3000');
-});
-
- 
