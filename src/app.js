@@ -30,6 +30,24 @@ app.post("/signup", async (req,res) =>{
     }
 })
 
+app.post("/login", async (req,res) =>{
+    try{
+        const {email, password} = req.body;
+        const user = await User.findOne({email:email});
+        if(!user){
+            return res.status(404).send("Invalid Credentials");
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if(!isPasswordValid){
+            return res.status(404).send("Invalid Credentials");
+        }
+        res.send("User logged in successfully");
+    } catch(e){
+        return res.status(400).send(e.message);
+    }
+})
+
 
 //get user by email
 app.get("/user", async (req,res)=>{
