@@ -4,8 +4,11 @@ const app  = express();
 const {validateSignUpData} = require('./utils/validation');
 const User = require('./models/user');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
  
 app.use(express.json());
+app.use(cookieParser());
 
 app.post("/signup", async (req,res) =>{
     // Validation of the data
@@ -42,12 +45,38 @@ app.post("/login", async (req,res) =>{
         if(!isPasswordValid){
             return res.status(404).send("Invalid Credentials");
         }
+        //create JWT token
+        const token = jwt.sign({id:user._id}, process.env.JWT_SECRET);
+
+        //Add token to the cookie and send the response back to the user
+        res.cookie("token", token)
+
         res.send("User logged in successfully");
     } catch(e){
         return res.status(400).send(e.message);
     }
 })
 
+app.get("/profile", async (req,res) =>{
+    try{
+        const {token} = req.cookies;
+
+        if(!token){
+            throw new Error("Unauthenticated");
+        }
+        
+        const decodedMessage = jwt.verify(token, process.env.JWT_SECRET);
+        //Validate the token
+        const {id} = decodedMessage;
+        const user = await User.findById(id);
+        if(!user){
+            throw new Error("User not found");
+        }
+        res.send(user);
+    } catch(e){
+        return res.status(401).send(e.message);
+    }
+})
 
 //get user by email
 app.get("/user", async (req,res)=>{
