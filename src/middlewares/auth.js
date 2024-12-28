@@ -1,23 +1,24 @@
-const adminAuth= (req,res,next) =>{
-    console.log("Inside the adminAuth function"); 
-    const random = Math.floor(Math.random() * 10) + 1;
-    if(random > 5){
+const jwt = require('jsonwebtoken');
+const User = require('../models/user');
+
+const userAuth = async (req,res,next) =>{
+    try{
+        // Read the token form the req cookies 
+        const {token} = req.cookies;    
+        if(!token){
+            throw new Error("No token found");
+        }
+        const decodedMessage = jwt.verify(token, process.env.JWT_SECRET);
+        const {id} = decodedMessage; 
+        const user = await User.findById(id);
+        if(!user){
+            throw new Error("User not found");
+        }
+        req.user = user;
         next();
-    }
-    else{
-        res.send("Not Authenticated");
+    } catch (err) {
+        return res.status(401).send(err.message);
     }
 }
 
-const userAuth= (req,res,next) =>{
-    const random = Math.floor(Math.random() * 10) + 1;
-    if(random > 5){
-        console.log("User Authenticated");
-        next();
-    }
-    else{
-        res.send("Not Authenticated");
-    }
-}
-
-module.exports = {adminAuth, userAuth};
+module.exports = {userAuth}; 
