@@ -83,13 +83,12 @@ requestRouter.post("/request/review/:status/:requestId",userAuth , async (req,re
             message: "Connection request " + status,
             data
         });
-
     } catch (e){
         return res.status(400).send(e.message);
     }
-
-
 })
+
+
 
 module.exports = {requestRouter};
 
